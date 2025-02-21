@@ -1,0 +1,8 @@
+@import "tailwindcss";
+
+.inputbtn{
+    @apply bg-white p-2 rounded-sm focus:outline-2 focus:outline-lime-300
+}
+.btn{
+    @apply  bg-green-500 py-2 hover:bg-green-600 transition-all text-white font-semibold text-[16px] rounded-sm
+}
