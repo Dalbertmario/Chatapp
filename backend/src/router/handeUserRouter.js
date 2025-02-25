@@ -1,6 +1,10 @@
 import express from 'express'
-import { SignIn, SignUp } from '../controller/handelUserRouter.js'
+import { AccountDetails, SignIn, SignUp, updateAccount } from '../controller/handelUserRouter.js'
 import { tokenauth } from '../middelware/tokenverfication.js'
+import multer from 'multer'
+
+const storage = multer.memoryStorage();
+const upload = multer({storage})
 
 const router = express.Router()
 
@@ -18,5 +22,9 @@ const userData = {
 router.post('/admin',tokenauth,(req,res)=>{
     res.status(200).json({message:"Welcome admin"})
 })
+
+router.get('/userData/:id',AccountDetails)
+
+router.post('/accountupdate',upload.single('image'),updateAccount)
 
 export default router

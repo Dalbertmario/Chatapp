@@ -8,6 +8,8 @@ import userSearchRouter from  './src/router/userSearchRouter.js'
 import HandeUserRouter from  './src/router/handeUserRouter.js'
 import ChatRouter from './src/router/ChatRouter.js'
 import ContactRouter  from  './src/router/ContactRouter.js'
+import requestRouter from './src/router/requset.js'
+import oauthRouter from './src/router/oauth.js'
 
 const app = express()
 app.use(express.json())
@@ -34,6 +36,8 @@ ChatRouter(io)
 app.use('/searching',userSearchRouter)
 app.use('/authorization',HandeUserRouter)
 app.use('/account',ContactRouter)
+app.use('/oauth',oauthRouter)
+app.use('/request',requestRouter)
 
 
 server.listen(port,()=>{

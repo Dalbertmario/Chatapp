@@ -4,7 +4,8 @@ const initialState ={
     user:null,
     token:null,
     accountDetails: null,
-    messages:[]
+    messages:[],
+    recent : null 
 }
 
 const uiReducer = createSlice({
@@ -22,9 +23,12 @@ const uiReducer = createSlice({
         },
         setMessage:(state,action)=>{
             state.messages = action.payload
+        },
+        recentMessage:(state,action)=>{
+            state.recent = action.payload
         }
     }
 }) 
 
-export const {setMessage,setAccountDetails,userReuder,setToken} = uiReducer.actions
+export const {recentMessage,setMessage,setAccountDetails,userReuder,setToken} = uiReducer.actions
 export default uiReducer.reducer

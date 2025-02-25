@@ -1,26 +1,26 @@
 import { useQuery } from "@tanstack/react-query"
 
-async function  ContactFetcher() {
+async function  ContactFetcher(id) {
 const api = import.meta.env.VITE_API_HOST
-const id = JSON.parse(localStorage.getItem('user'))
+
     try{
-       const response = await fetch(`${api}/account/contact/${id.id}`)
+       const response = await fetch(`${api}/account/contact/${id}`)
        if(!response.ok){
         const err = await response.text()
         throw new Error(err || 'Error in fetching the the contacts' )
        }
        const data = await response.json()
-       console.log(data)
        return data 
     }catch(err){
        console.log(err.message)
     }
 }
 
-function UseContact(){
+function UseContact({id}){
     const {data,isLoading}=useQuery({
-        queryKey:['contact'],
-        queryFn:ContactFetcher
+        queryKey:['contact',id],
+        queryFn:()=>ContactFetcher(id)
+        
     })
     return {data,isLoading}
 }

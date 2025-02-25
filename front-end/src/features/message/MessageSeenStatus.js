@@ -1,4 +1,4 @@
-import { useMutation } from "@tanstack/react-query"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 
 async function MessageSeenStatus(params){
 const api = import.meta.env.VITE_API_HOST
@@ -18,8 +18,12 @@ const api = import.meta.env.VITE_API_HOST
 }
 
 function UseStatusChange(){
+const query = useQueryClient()
     const {mutate,isLoading}=useMutation({
-        mutationFn:(da)=>MessageSeenStatus(da)
+        mutationFn:(da)=>MessageSeenStatus(da),
+        onSuccess:()=>{
+            query.invalidateQueries(['message'])
+        }
     })
     return {mutate,isLoading}
 }

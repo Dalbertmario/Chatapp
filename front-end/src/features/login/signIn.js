@@ -17,6 +17,7 @@ async function signIn(params) {
         throw new Error(responceError || 'Error in SignIning')
     }
     const token = await result.json()
+    localStorage.removeItem('user')
     localStorage.setItem('token', JSON.stringify(token))
     return token
 }

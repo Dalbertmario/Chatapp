@@ -1,16 +1,18 @@
 import bcrypt from 'bcrypt'
 import User from '../model/userModel.js'
 import JWT from 'jsonwebtoken'
+import { response } from 'express'
 
 export const SignUp = async (req,res)=>{
     const {name,email,password} = req.body
     const existingUser = await User.findOne({email})
+    console.log(existingUser)
     if(existingUser){
         return res.status(400).json({message:"User already exist"})
     }
     try{
         const hasspassword = await bcrypt.hash(password,10)
-        const newUser = new User({name,email,password:hasspassword,role:'user'})
+        const newUser = new User({name,email,password:hasspassword,role:'user',status:`Hey! I'm Using WhatApp`})
         await newUser.save()
     res.status(200).json({message:"User register successfully"})
     }catch(err){
@@ -25,6 +27,7 @@ export const SignIn = async (req,res)=>{
     console.log(name,password)
     try{
         const result = await User.findOne({name})
+    
         if(!result){
           return res.status(400).json({message:"User doesn't exist"})
         }
@@ -36,5 +39,44 @@ export const SignIn = async (req,res)=>{
         res.status(201).json({token:token,role:result.role})
     }catch(err){
        res.status(500).json({message:"Unexpected error"})
+    }
+}
+
+
+export const AccountDetails = async (req,res)=>{
+    const id =req.params.id
+
+    try{
+      const responce = await User.findById(id).select(['name','status','profile'])
+      if(responce.length === 0 ){
+        res.status(400).json({message:'Account not found'})
+      }
+      res.status(200).json(responce)
+    }catch(err){
+        res.status(500).json({message:"Unexpected error"})
+    }
+}
+
+
+export const updateAccount = async (req,res)=>{
+    try{
+    const {id,name,status} =req.body
+    console.log(id,name,status)
+    console.log(req.file)
+    const imageBuffer = req.file ? req.file.buffer.toString("base64") : null
+    
+
+
+    const updateUser = await User.findByIdAndUpdate(id,{
+        name : name,
+        profile: imageBuffer,
+        status : status
+    }, {new:true})
+    if(!updateUser){
+        return res.status(404).json({message:"User not found"})
+    }
+    }catch(Err){
+        console.log("Error in updateing the profile",Err)
+        res.status(500).json({message:"Unexpected error"})
     }
 }

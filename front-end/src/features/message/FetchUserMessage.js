@@ -5,7 +5,6 @@ import { setMessage } from "../../ui/uistore"
 async function MessageFetching(params) {
     const api =import.meta.env.VITE_API_HOST
     const user = JSON.parse(localStorage.getItem('user'))
-    console.log(user)
     try{
        const responce = await fetch(`${api}/account/contact/message`,{
            method:"POST",

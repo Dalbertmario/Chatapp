@@ -1,17 +1,24 @@
-import { useEffect, useState } from "react"
 import {Toaster} from 'react-hot-toast'
 import {createBrowserRouter, RouterProvider} from 'react-router-dom'
 import ChatLayout from "./pages/ChatLayout"
 import LoginPage from "./pages/LoginPage"
 import SignUp from "./pages/SignUp"
+import AccountPage from "./pages/AccountPage"
+import ChatSide from './pages/ChatSide'
+import Applayout from './pages/Applayout'
+
 export default function App() {
 const route = createBrowserRouter([{
-  path:'/',element:<ChatLayout/>
+  element:<Applayout/>,children:[
+    {path:'/setting',element:<AccountPage/>},
+    {path:'/',element:<ChatLayout/>}
+  ]
 },
 {
   path:'/signIn',element:<LoginPage/>
 },
 {path:'/signUp',element:<SignUp/>}
+
 ])
   return (
   <>

@@ -10,7 +10,16 @@ function ChatRouter(io) {
         });
         // Handle messages
         socket.on('message', async (msg) => {
-            
+        console.log(msg)
+        try{
+        const newReciverId = await User.findOne({_id:msg.reciverID}).select('contact')
+      
+        if (newReciverId && !newReciverId.contact.includes(msg.senderID)) {
+             newReciverId.contact.push(msg.senderID)
+        }}catch(er){
+            console.log(er.message)
+        }
+        
             try {
                 const newMsg = new Message({
                     reciverId: msg.reciverID,
@@ -18,10 +27,8 @@ function ChatRouter(io) {
                     message: msg.message,
                 });
                 await newMsg.save();
-                console.log(newMsg)
                 const reciverSocket = await User.findOne({ _id: msg.reciverID }).select('socketid');
                 if (reciverSocket.socketid) {
-                    await Message.findOneAndUpdate({_id:newMsg._id},{status:'seen'})
                     io.to(reciverSocket.socketid).emit("receiveMessage", {senderId:msg.senderID,reciverId:msg.reciverID,message:msg.message,timeStamp:Date.now()});
                 }
             } catch (er) {
@@ -30,11 +37,9 @@ function ChatRouter(io) {
 
        
             try {
-                const user = await User.findOne({ _id: msg.senderID }).select('contact');
-                if (!user.contact.includes(msg.reciverID)) {
-                    await User.findByIdAndUpdate(msg.senderID, {
-                        $push: { contact: msg.reciverID }
-                    });
+                const users = await User.findOne({ _id: msg.senderID }).select('contact');
+                if (users && !users.contact.includes(msg.reciverID)) {
+                     users.contact.push(msg.reciverID)
                 }
             } catch (er) {
                 console.log(er.message);

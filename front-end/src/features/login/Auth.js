@@ -1,7 +1,6 @@
 import { useMutation } from "@tanstack/react-query"
-import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { setAccountDetails } from "../../ui/uistore";
+
 
 async function Auth() {
     const api = import.meta.env.VITE_API_HOST;
@@ -20,6 +19,7 @@ async function Auth() {
             throw new Error(res || 'Error in fetching the auth token');
         }
         const data= await response.json()
+        localStorage.removeItem('user')
         localStorage.setItem('user',JSON.stringify(data.userdetails))
         return data
     } catch (err) {

@@ -1,11 +1,13 @@
 import { Outlet } from "react-router-dom";
-import Header from "../ui/Header";
+import LayoutHeader from "../ui/LayoutHeader";
 export default function Applayout() {
-
+  const user = JSON.parse(localStorage.getItem('user'))
   return (
     <div>
-        <Header/>
+        <LayoutHeader user={user?.name}/>
+        <div>
         <Outlet/>
+        </div>
     </div>
   )
 }
