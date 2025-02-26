@@ -4,22 +4,19 @@ import User from '../model/userModel.js'
 function ChatRouter(io) {
     io.on('connection', async (socket) => {
 
-        // Register the user
         socket.on('register', async (id) => {
             await User.findByIdAndUpdate(id, { socketid: socket.id });
         });
-        // Handle messages
+        
         socket.on('message', async (msg) => {
-        console.log(msg)
         try{
         const newReciverId = await User.findOne({_id:msg.reciverID}).select('contact')
-      
         if (newReciverId && !newReciverId.contact.includes(msg.senderID)) {
              newReciverId.contact.push(msg.senderID)
+             await newReciverId.save()
         }}catch(er){
             console.log(er.message)
         }
-        
             try {
                 const newMsg = new Message({
                     reciverId: msg.reciverID,
@@ -35,11 +32,12 @@ function ChatRouter(io) {
                 console.log(er);
             }
 
-       
             try {
                 const users = await User.findOne({ _id: msg.senderID }).select('contact');
+                
                 if (users && !users.contact.includes(msg.reciverID)) {
                      users.contact.push(msg.reciverID)
+                     await users.save()
                 }
             } catch (er) {
                 console.log(er.message);

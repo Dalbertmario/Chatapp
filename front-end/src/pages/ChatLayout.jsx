@@ -7,7 +7,6 @@ export default function ChatLayout() {
   const [searchParams] = useSearchParams();
   const name = searchParams.get("name");
   const id = searchParams.get("id");
-  console.log(name,id)
 
   useEffect(() => {
     if (name && id) {

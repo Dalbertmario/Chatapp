@@ -61,12 +61,7 @@ export const AccountDetails = async (req,res)=>{
 export const updateAccount = async (req,res)=>{
     try{
     const {id,name,status} =req.body
-    console.log(id,name,status)
-    console.log(req.file)
     const imageBuffer = req.file ? req.file.buffer.toString("base64") : null
-    
-
-
     const updateUser = await User.findByIdAndUpdate(id,{
         name : name,
         profile: imageBuffer,
@@ -75,6 +70,7 @@ export const updateAccount = async (req,res)=>{
     if(!updateUser){
         return res.status(404).json({message:"User not found"})
     }
+    res.status(201).json({message:"Successfully updated"})
     }catch(Err){
         console.log("Error in updateing the profile",Err)
         res.status(500).json({message:"Unexpected error"})

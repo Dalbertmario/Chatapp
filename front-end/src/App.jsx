@@ -4,7 +4,6 @@ import ChatLayout from "./pages/ChatLayout"
 import LoginPage from "./pages/LoginPage"
 import SignUp from "./pages/SignUp"
 import AccountPage from "./pages/AccountPage"
-import ChatSide from './pages/ChatSide'
 import Applayout from './pages/Applayout'
 
 export default function App() {
