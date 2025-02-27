@@ -10,6 +10,7 @@ import ChatRouter from './src/router/ChatRouter.js'
 import ContactRouter  from  './src/router/ContactRouter.js'
 import requestRouter from './src/router/requset.js'
 import oauthRouter from './src/router/oauth.js'
+import { generateRsaKeyPair } from './src/utils/KeyJeneration.js'
 
 const app = express()
 app.use(express.json())
@@ -28,7 +29,7 @@ const io = new Server(server,{
 })
 //Db Connection
 connectDb()
-
+generateRsaKeyPair()
 app.get('/',(req,res)=>{
     res.send('heelo')
 })

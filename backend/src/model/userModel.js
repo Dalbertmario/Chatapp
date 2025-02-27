@@ -10,7 +10,11 @@ const  userSchema = new mongoose.Schema({
     contact:{type:Array,required:false},
     socketid:{type:String,required:false},
     status:{type:String,required:false},
-    profile:{type:String,default:null,required:false}
+    profile:{type:String,default:null,required:false},
+    iv:{type:String,required:false},
+    privateKey:{type:String,required:false},
+    publicKey:{type:String,required:false},
+    hex:{type:String,required:false}
 })
 
 const User  = mongoose.model('users',userSchema);

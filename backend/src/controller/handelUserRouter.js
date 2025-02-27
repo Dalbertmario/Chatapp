@@ -1,18 +1,19 @@
 import bcrypt from 'bcrypt'
 import User from '../model/userModel.js'
 import JWT from 'jsonwebtoken'
-import { response } from 'express'
+import { encryptPrivateKey, generateRsaKeyPair } from '../utils/KeyJeneration.js'
 
 export const SignUp = async (req,res)=>{
     const {name,email,password} = req.body
     const existingUser = await User.findOne({email})
-    console.log(existingUser)
     if(existingUser){
         return res.status(400).json({message:"User already exist"})
     }
     try{
         const hasspassword = await bcrypt.hash(password,10)
-        const newUser = new User({name,email,password:hasspassword,role:'user',status:`Hey! I'm Using WhatApp`})
+        const pvtKey =await generateRsaKeyPair()
+        const encryptPvtkey = encryptPrivateKey(pvtKey.privateKey,password)
+        const newUser = new User({name,email,password:hasspassword,role:'user',status:`Hey! I'm Using WhatApp`,publicKey: pvtKey.publicKey,privateKey:encryptPvtkey.encryptedPrivateKey,salt:encryptPvtkey.salt,iv:encryptPvtkey.iv})
         await newUser.save()
     res.status(200).json({message:"User register successfully"})
     }catch(err){
