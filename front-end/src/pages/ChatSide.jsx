@@ -1,21 +1,27 @@
-import { useEffect, useRef, useState } from "react"
+import { useEffect,  useRef, useState } from "react"
 import io from 'socket.io-client'
 import { LuSendHorizontal } from "react-icons/lu";
 import Header from "../ui/Header";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import EmptyScreen from "../ui/EmptyScreen";
 import DateTime from "../helper/datetimeFormate";
+import {settingCurrectMsg} from "../ui/uistore"
 export default function ChatSide() {
 const [input,Inputmessage]=useState("")
 const {user,messages} =useSelector(state=>state.uistore)
 const socket = useRef(null)
 const account = JSON.parse(localStorage.getItem('user'))
 const [message,setMessage] = useState([])
-
+const dispatch = useDispatch()
 useEffect(()=>{
    setMessage(messages)
 },[messages])
 
+useEffect(() => {
+  console.log(message)
+  dispatch(settingCurrectMsg(message));
+}, [message,dispatch]);
+// console.log(message)
 useEffect(()=>{
   if(!socket.current){
     socket.current =  io("http://localhost:3000",{
@@ -24,13 +30,21 @@ useEffect(()=>{
   }
   socket.current.emit('register',account?.id)
   const handleReceiveMessage = (dta) => {
+    console.log(dta)
+    if (dta.senderID !== account.id) {
     setMessage((prev) => [...prev, dta]);
-  };
-
-  return () => {
-    socket.current.off("receiveMessage", handleReceiveMessage);
+    }
   };
   
+  socket.current.on("receiveMessage",handleReceiveMessage)
+  
+  return () => {
+    if (socket.current) {
+      socket.current.off("receiveMessage"); 
+      socket.current.disconnect(); 
+      socket.current = null; 
+    }
+  };
 },[account?.id])
 
 function handelMessage(){
@@ -55,7 +69,7 @@ function handelMessage(){
       }`}
     >
       <p className="whitespace-pre-wrap break-words">
-        {el.message}{" "}
+        {el.message}
         <span className="text-[10px] text-slate-600">
           {DateTime(el.timeStamp)}
         </span>

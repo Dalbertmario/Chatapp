@@ -1,7 +1,12 @@
 import mongoose from "mongoose";
 import Message from "../model/MessaageModel.js";
 import User from "../model/userModel.js";
+import fs from "fs"
+import path from "path"
+import { fileURLToPath } from "url";
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 export const Contact = async (req, res) => {
   const { id } = req.params;
@@ -27,7 +32,6 @@ export const Contact = async (req, res) => {
     });
 
     const notification = {};
-
     const users = await User.find({ _id: { $in: contactIds } }).select(["name","profile"]);
 
     for (let i = 0; i < users.length; i++) {
@@ -44,9 +48,9 @@ export const Contact = async (req, res) => {
       if (!ids) return null;
       try {
         let text;
+        
         const messages = await Message.find({ senderId: ids,reciverId:id }).sort({timeStamp:-1}).limit(1)
         const sendIngMessage = await Message.find({senderId:id,reciverId:ids}).sort({timeStamp:-1}).limit(1)
-
        for(let i =0 ; i< messages.length;i++){
           if(new Date(messages[i].timeStamp) > new Date(sendIngMessage[i]?.timeStamp|| null)){
             text= messages[i].message
@@ -60,15 +64,17 @@ export const Contact = async (req, res) => {
         return null;
       }
     }
+
+
     ////////////////////////////////////////////////////////////////////////////
     const notificationConst = await Promise.all(
       Object.entries(notification).map(async ([name, notifications]) => {
-        const user = users.find(el => el.name === name);
+        const userss = users.find(el => el.name === name);
         return {
           notification: notifications.length,
-          _id: user,
+          _id: userss,
           name: name,
-          latest: user ? await fetchLatestMessage(user._id._id) : null
+          latest: userss ? await fetchLatestMessage(userss._id._id) : null
         };
       })
     );

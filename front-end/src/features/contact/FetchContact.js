@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query"
 
-async function  ContactFetcher(id) {
+async function ContactFetcher(id) {
 const api = import.meta.env.VITE_API_HOST
 
     try{
@@ -20,9 +20,8 @@ function UseContact({id}){
     const {data,isLoading}=useQuery({
         queryKey:['contact',id],
         queryFn:()=>ContactFetcher(id)
-        
     })
     return {data,isLoading}
 }
 
-export default UseContact
+export default UseContact;

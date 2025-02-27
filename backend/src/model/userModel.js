@@ -10,7 +10,7 @@ const  userSchema = new mongoose.Schema({
     contact:{type:Array,required:false},
     socketid:{type:String,required:false},
     status:{type:String,required:false},
-    profile:{type:String,required:false}
+    profile:{type:String,default:null,required:false}
 })
 
 const User  = mongoose.model('users',userSchema);

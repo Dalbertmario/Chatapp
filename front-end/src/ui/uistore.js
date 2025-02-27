@@ -7,7 +7,8 @@ const initialState ={
     messages:[],
     recent : null,
     search: null,
-    profile:null
+    profile:null,
+    msg:[]
 }
 
 const uiReducer = createSlice({
@@ -23,7 +24,7 @@ const uiReducer = createSlice({
         setAccountDetails:(state)=>{
             state.accountDetails = JSON.parse(localStorage.getItem('user'))
         },
-        setMessage:(state,action)=>{
+        settingMessage:(state,action)=>{
             state.messages = action.payload
         },
         recentMessage:(state,action)=>{
@@ -34,9 +35,12 @@ const uiReducer = createSlice({
         },
         setSearch:(state,action)=>{
             state.search = action.payload
+        },
+        settingCurrectMsg:(state,action)=>{
+            state.msg = action.payload
         }
     }
 }) 
 
-export const {setSearch,setProfile,recentMessage,setMessage,setAccountDetails,userReuder,setToken} = uiReducer.actions
+export const {setSearch,settingCurrectMsg,setProfile,recentMessage,settingMessage,setAccountDetails,userReuder,setToken} = uiReducer.actions
 export default uiReducer.reducer

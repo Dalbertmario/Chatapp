@@ -1,7 +1,6 @@
 import { useMutation } from "@tanstack/react-query"
 import { useDispatch } from "react-redux"
 import { setToken } from "../../ui/uistore"
-import { useNavigate } from "react-router-dom"
 
 
 const api = import.meta.env.VITE_API_HOST
@@ -13,7 +12,6 @@ async function signIn(params) {
      })
     if(!result.ok){
         const responceError = await result.text()
-        console.log(responceError)
         throw new Error(responceError || 'Error in SignIning')
     }
     const token = await result.json()
@@ -23,7 +21,6 @@ async function signIn(params) {
 }
 function UseSingIn(){
 const dispatch = useDispatch()
-
     const {mutate,isLoading} = useMutation({
         mutationFn:(da)=>signIn(da),
         onSuccess:(ds)=>{

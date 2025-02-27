@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query"
 import { useDispatch } from "react-redux"
-import { setMessage } from "../../ui/uistore"
+import { settingMessage } from "../../ui/uistore"
 
 async function MessageFetching(params) {
     const api =import.meta.env.VITE_API_HOST
@@ -29,7 +29,7 @@ const dispatch = useDispatch()
         queryFn: ()=>MessageFetching(params),
         enabled:!!params
     })
-   dispatch(setMessage(data))
+   dispatch(settingMessage(data))
     return {data,isLoading}
 }
 

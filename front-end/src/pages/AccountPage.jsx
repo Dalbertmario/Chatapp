@@ -8,7 +8,7 @@ import { setProfile } from "../ui/uistore";
 
 export default function AccountPage() {
   const {mutate,isLoading:AccountLoading} = UseUpdateAccount()
-  const {register,reset,handleSubmit} = useForm()
+  const {register,reset,handleSubmit,setValue} = useForm()
   const [inputData,setInputData] = useState(null)
   const user = JSON.parse(localStorage.getItem('user'))
   const {data} = UseFetchingAccount(user.id)
@@ -19,14 +19,13 @@ export default function AccountPage() {
     status:data?.status,
     image:data?.profile
    })
-  //  dispatch(setProfile(data?.profile))
   
   },[data,reset,dispatch])
  function handelForm(data){
      mutate({...data})
  }
-
 function handelImageInput(e){
+  setValue('image',e)
    const reader = new FileReader()
    reader.onload= ()=>{
     setInputData(reader.result)
@@ -39,7 +38,7 @@ function handelImageInput(e){
         <h1 className="text-xl text-green-500 font-semibold">Update Your Profile</h1>
         <label className="cursor-pointer m-auto max-w-[100px] flex items-center gap-2">
          <input disabled={AccountLoading} {...register('image')} onChange={(e)=>handelImageInput(e.target.files[0])} type="file" className="hidden" />
-          {inputData ?  <img src={inputData}/> : <CgProfile color="grey" size={60} />  } 
+          {inputData ?  <img src={data?.profile ? data?.profile : inputData}/> : <CgProfile color="grey" size={60} />  } 
          </label>
          <div className="flex flex-row justify-center gap-5 items-center">
          <label className="font-semibold font-stretch-50%">Name</label>

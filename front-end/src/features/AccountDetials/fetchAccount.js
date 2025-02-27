@@ -9,7 +9,6 @@ const api = import.meta.env.VITE_API_HOST
         throw new Error(errorResponce || 'There is an error in fetching user data')
      }
      const data = await responce.json()
-     console.log(data)
      return data
     }catch(err){
         console.log(err.message)
