@@ -6,11 +6,13 @@ import { useDispatch, useSelector } from "react-redux";
 import EmptyScreen from "../ui/EmptyScreen";
 import DateTime from "../helper/datetimeFormate";
 import {settingCurrectMsg} from "../ui/uistore"
+import { EncryptMessage } from "../helper/MessageEncryption";
 export default function ChatSide() {
 const [input,Inputmessage]=useState("")
 const {user,messages} =useSelector(state=>state.uistore)
 const socket = useRef(null)
 const account = JSON.parse(localStorage.getItem('user'))
+const ContactData = JSON.parse(localStorage.getItem('contactData'))
 const [message,setMessage] = useState([])
 const dispatch = useDispatch()
 useEffect(()=>{
@@ -47,8 +49,10 @@ useEffect(()=>{
   };
 },[account?.id])
 
-function handelMessage(){
-   socket.current.emit("message",{message:input,reciverID:user._id,senderID:account.id}) 
+async function handelMessage(){
+  const pubKey = user._id.publicKey
+  const encryptedMessage =await EncryptMessage(input,pubKey)
+  //  socket.current.emit("message",{message:input,reciverID:user._id,senderID:account.id,iv:encryptedMessage.iv,aesKey:encryptedMessage.encryptedAesKey}) 
    setMessage(e=>[...e,{message:input,reciverId:user._id,senderId:account.id,timeStamp:Date.now()}])
    Inputmessage('')
 }

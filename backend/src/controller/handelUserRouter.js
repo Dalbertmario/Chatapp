@@ -25,7 +25,6 @@ export const SignUp = async (req,res)=>{
 
 export const SignIn = async (req,res)=>{
     const {name,password} = req.body
-    console.log(name,password)
     try{
         const result = await User.findOne({name})
     

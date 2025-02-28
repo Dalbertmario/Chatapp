@@ -18,13 +18,17 @@ function ChatRouter(io) {
             console.log(er.message)
         }
             try {
+             
                 const newMsg = new Message({
                     reciverId: msg.reciverID,
                     senderId: msg.senderID,
                     message: msg.message,
+                    iv:msg.iv,
+                    aesKey:msg.aesKey
                 });
                 await newMsg.save();
-                const reciverSocket = await User.findOne({ _id: msg.reciverID }).select('socketid');
+                const reciverSocket = await User.findOne({ _id: msg.reciverID }).select(['socketid','privateKey']);
+                
                 if (reciverSocket.socketid) {
                     io.to(reciverSocket.socketid).emit("receiveMessage", {senderId:msg.senderID,reciverId:msg.reciverID,message:msg.message,timeStamp:Date.now()});
                 }

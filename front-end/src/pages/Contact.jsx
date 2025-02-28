@@ -18,6 +18,10 @@ const dispatch = useDispatch()
 const {msg} = useSelector(state=>state.uistore)
 const api = import.meta.env.VITE_API_HOST
 const [contactData,setContactData] = useState([])
+
+useEffect(()=>{
+ localStorage.setItem('contactData',JSON.stringify(contactData))
+},[contactData])
 useEffect(()=>{
   const users = JSON.parse(localStorage.getItem('user')) || {};
   async function ContactFecth() {
@@ -36,13 +40,13 @@ useEffect(()=>{
   }
  ContactFecth()
 },[api,msg])
+
 function handelUserClick(el){
   const {_id:id} = el._id 
   mutate({senderId:user.id,repId:el._id._id})
   dispatch(userReuder(el))
   id ? setRecipitentId({repId:id}) : setRecipitentId({repId:el._id }) 
 }
-console.log(data)
   return (
     <div className=" flex flex-col gap-2 sm:w-[100%] xl:w-[30%] lg:w-[50%] md:w-[50%] p-2">
       <input onChange={(e)=>setSearch(e.target.value)} type="text" className="bg-white outline transition-all focus:outline-green-500 focus:outline-3 outline-green-500 w-[100%] p-3 py-2 flex items-center rounded-sm"/>

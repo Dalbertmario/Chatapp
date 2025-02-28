@@ -10,6 +10,7 @@ const api = import.meta.env.VITE_API_HOST
         throw new Error(err || 'Error in fetching the the contacts' )
        }
        const data = await response.json()
+       console.log(data)
        return data 
     }catch(err){
        console.log(err.message)

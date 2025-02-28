@@ -4,10 +4,6 @@ import User from "../model/userModel.js";
 import fs from "fs"
 import path from "path"
 import { fileURLToPath } from "url";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
 export const Contact = async (req, res) => {
   const { id } = req.params;
 
@@ -32,7 +28,7 @@ export const Contact = async (req, res) => {
     });
 
     const notification = {};
-    const users = await User.find({ _id: { $in: contactIds } }).select(["name","profile"]);
+    const users = await User.find({ _id: { $in: contactIds } }).select(["name","profile","publicKey"]);
 
     for (let i = 0; i < users.length; i++) {
       if (!notification[users[i].name]) {
@@ -51,6 +47,7 @@ export const Contact = async (req, res) => {
         
         const messages = await Message.find({ senderId: ids,reciverId:id }).sort({timeStamp:-1}).limit(1)
         const sendIngMessage = await Message.find({senderId:id,reciverId:ids}).sort({timeStamp:-1}).limit(1)
+
        for(let i =0 ; i< messages.length;i++){
           if(new Date(messages[i].timeStamp) > new Date(sendIngMessage[i]?.timeStamp|| null)){
             text= messages[i].message

@@ -6,7 +6,9 @@ const Messageing  = new mongoose.Schema({
     senderId : {type:mongoose.Schema.Types.ObjectId,ref:"users",required:true},
     message:{type:String,required:true},
     status:{type:String,default:"unseen",required:false},
-    timeStamp:{type:Date,default:Date.now}
+    timeStamp:{type:Date,default:Date.now},
+    iv:{type:String,required:false},
+    aeskey:{type:String,required:false}
 })
 
 const Message = mongoose.model('Messages',Messageing)

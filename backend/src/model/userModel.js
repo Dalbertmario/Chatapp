@@ -14,7 +14,7 @@ const  userSchema = new mongoose.Schema({
     iv:{type:String,required:false},
     privateKey:{type:String,required:false},
     publicKey:{type:String,required:false},
-    hex:{type:String,required:false}
+    salt:{type:String,required:false}
 })
 
 const User  = mongoose.model('users',userSchema);
