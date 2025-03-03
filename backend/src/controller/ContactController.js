@@ -4,6 +4,9 @@ import User from "../model/userModel.js";
 import fs from "fs"
 import path from "path"
 import { fileURLToPath } from "url";
+import { decryptAesKey, decryptMessage } from "../utils/decryptionAesKey.js";
+import Redisclient from "../utils/redisClinet.js";
+import { decryptPrivateKey } from "../utils/KeyJeneration.js";
 export const Contact = async (req, res) => {
   const { id } = req.params;
 
@@ -88,19 +91,30 @@ export const Contact = async (req, res) => {
 
 export const Messages = async (req, res) => {
   const { repId, senderId } = req.body;
-
   try {
     const response = await Message.find({
       $or: [
         { reciverId: new mongoose.Types.ObjectId(repId), senderId: new mongoose.Types.ObjectId(senderId) },
         { reciverId: new mongoose.Types.ObjectId(senderId), senderId: new mongoose.Types.ObjectId(repId) }
       ]
-    }).select(['message','timeStamp']);
+    }).select(['message','timeStamp','aesKey','iv','senderId','reciverId']);
+    
+    const repPrivatekey = await User.findById({_id: mongoose.Types.ObjectId(senderId)}).select(['privateKey','salt','iv','name'])
+    const derivedKey = await Redisclient.get(`${repPrivatekey._id}`)
+    const finalDerivedKey =await  JSON.parse(derivedKey)
+    const decryptedPrivateKey = await decryptPrivateKey(repPrivatekey.privateKey, finalDerivedKey, repPrivatekey.salt, repPrivatekey.iv)
+    let text =[]
+    for(let i=0;i<response.length;i++){
+      const aes = Buffer.from(response[i].aesKey,'base64')
+        const aesKey =await decryptAesKey(aes,decryptedPrivateKey)
+        console.log(aesKey)
+        // const decryptedMessage =await decryptMessage(response[i].message,aesKey,response[i].iv)
+        //  await text.push({...response[i],message:decryptedMessage})
+    }
 
     if (response.length === 0) {
       return res.status(200).json([]);
-    }
-
+    } 
     res.status(200).json(response);
   } catch (err) {
     console.log(err.message);

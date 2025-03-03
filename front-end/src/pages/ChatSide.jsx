@@ -20,10 +20,9 @@ useEffect(()=>{
 },[messages])
 
 useEffect(() => {
-  console.log(message)
   dispatch(settingCurrectMsg(message));
 }, [message,dispatch]);
-// console.log(message)
+
 useEffect(()=>{
   if(!socket.current){
     socket.current =  io("http://localhost:3000",{
@@ -50,7 +49,6 @@ useEffect(()=>{
 },[account?.id])
 async function handelMessage(){
   const pubKey =  user.publickey
-  console.log(pubKey)
   const encryptedMessage =await EncryptMessage(input,pubKey)
    socket.current.emit("message",{message:encryptedMessage.encryptedMessage,reciverID:user._id,senderID:account.id,iv:encryptedMessage.iv,aesKey:encryptedMessage.encryptedAesKey}) 
    setMessage(e=>[...e,{message:input,reciverId:user._id,senderId:account.id,timeStamp:Date.now()}])
@@ -66,14 +64,14 @@ async function handelMessage(){
      {message?.map((el, i) => (
   <div key={i} className="flex flex-col ">
     <div
-      className={`max-w-[40%] p-2 rounded-xl flex flex-col break-words ${
+      className={`max-w-[30%] p-2 rounded-xl flex flex-col break-words ${
         el.senderId === account.id
           ? 'bg-green-100 self-end'
           : 'bg-red-50 self-start'
       }`}
     >
       <p className="whitespace-pre-wrap break-words">
-        {JSON.stringify(el.message)}
+        {el.message}
         <span className="text-[10px] text-slate-600">
           {DateTime(el.timeStamp)}
         </span>
@@ -84,7 +82,7 @@ async function handelMessage(){
 
      </div>
      <div className="flex  mb-3 flex-row gap-2 justify-center">
-     <input value={input} className="bg-slate-100 rounded-l focus:outline-2 focus:outline-green-300 w-[90%] p-2" onChange={(e)=>Inputmessage(e.target.value)}  type="text"/>
+     <input value={input} className="bg-slate-100 rounded-l focus:outline-2 focus:outline-green-300 w-[50%] p-2" onChange={(e)=>Inputmessage(e.target.value)}  type="text"/>
      <button className="hover:text-green-300" onClick={()=>handelMessage()}><LuSendHorizontal size={20}/></button>
      </div>
      </div>

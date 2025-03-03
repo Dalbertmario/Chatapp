@@ -8,7 +8,7 @@ const Messageing  = new mongoose.Schema({
     status:{type:String,default:"unseen",required:false},
     timeStamp:{type:Date,default:Date.now},
     iv:{type:String,required:false},
-    aeskey:{type:String,required:false}
+    aesKey:{type:mongoose.Schema.Types.Mixed,required:false}
 })
 
 const Message = mongoose.model('Messages',Messageing)

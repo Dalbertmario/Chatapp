@@ -16,6 +16,7 @@ async function MessageFetching(params) {
         throw new Error(errorText || 'There is error in fetching the users message')
      }
      const data = await responce.json()
+     console.log(data)
      return data
     }catch(er){
         console.log(er.message)
