@@ -1,7 +1,8 @@
 import bcrypt from 'bcrypt'
 import User from '../model/userModel.js'
 import JWT from 'jsonwebtoken'
-import { encryptPrivateKey, generateRsaKeyPair } from '../utils/KeyJeneration.js'
+import { deriveKey, encryptPrivateKey, generateRsaKeyPair } from '../utils/KeyJeneration.js'
+import Redisclient from '../utils/redisClinet.js'
 
 export const SignUp = async (req,res)=>{
     const {name,email,password} = req.body
@@ -25,6 +26,7 @@ export const SignUp = async (req,res)=>{
 
 export const SignIn = async (req,res)=>{
     const {name,password} = req.body
+    console.log(name,password)
     try{
         const result = await User.findOne({name})
     
@@ -35,9 +37,23 @@ export const SignIn = async (req,res)=>{
         if(!comparsion){
             return res.status(400).json({message:"Password Incorrect"})
         }
+
+        if (comparsion) {
+            try {
+                const exists = await Redisclient.exists(`${result._id}`);
+                if (!exists) {
+                    const saltBuffering = Buffer.from(result.salt,'hex')
+                    const derivedKey = deriveKey(password,saltBuffering);
+                    await Redisclient.set(`${result._id}`, JSON.stringify(derivedKey));
+                }
+            } catch (redisError) {
+                console.error("Redis Error:", redisError);
+            }
+        }
+      
         const token = JWT.sign({username:result.name,email:result.email,role:result.role,username:result.name,id:result.id},process.env.JWT_TOKEN)
         res.status(201).json({token:token,role:result.role})
-    }catch(err){
+    }catch(err){Redisclient
        res.status(500).json({message:"Unexpected error"})
     }
 }

@@ -18,13 +18,12 @@ export async function generateRsaKeyPair() {
     }
 }
 
-function deriveKey(password, salt) {
+export function deriveKey(password, salt) {
     return crypto.pbkdf2Sync(password, salt, 100000, 32, 'sha256');
 }
 
 // Encrypt the private key using the password
 export function encryptPrivateKey(privateKey, password) {
-    console.log(privateKey,password)
     const salt = crypto.randomBytes(16); // Generate a unique salt
     const key = deriveKey(password, salt);
     const iv = crypto.randomBytes(16); // Generate IV (Initialization Vector)
@@ -41,14 +40,16 @@ export function encryptPrivateKey(privateKey, password) {
 }
 
 // Decrypt the private key using the password
-export function decryptPrivateKey(encryptedPrivateKey, password, saltHex, ivHex) {
-    const salt = Buffer.from(saltHex, 'hex');
+export async function decryptPrivateKey(encryptedPrivateKey, password, saltHex, ivHex) {
+    try{
     const iv = Buffer.from(ivHex, 'hex');
-    const key = deriveKey(password, salt);
-
+    let key =Buffer.from(password.data)
+   
     const decipher = crypto.createDecipheriv('aes-256-cbc', key, iv);
     let decrypted = decipher.update(encryptedPrivateKey, 'hex', 'utf8');
     decrypted += decipher.final('utf8');
-
     return decrypted;
+    }catch(er){
+        console.log(er)
+    }
 }

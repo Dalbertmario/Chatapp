@@ -11,7 +11,7 @@ export const search = async (req,res)=>{
       const user = await User.find({
         name:{$regex:search,$options:"i"},
         _id : {$ne :new mongoose.Types.ObjectId(userid) }
-      }).select(['name','id','profile','status'])
+      }).select(['name','id','profile','status','publicKey'])
       
       if(user.length === 0){
         return res.status(404).json({message:"No user found"})

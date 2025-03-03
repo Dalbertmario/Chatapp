@@ -61,15 +61,16 @@ export const Contact = async (req, res) => {
         return null;
       }
     }
-
-
     ////////////////////////////////////////////////////////////////////////////
     const notificationConst = await Promise.all(
       Object.entries(notification).map(async ([name, notifications]) => {
         const userss = users.find(el => el.name === name);
         return {
           notification: notifications.length,
-          _id: userss,
+          _id: userss._id,
+          publickey : userss.publicKey,
+          name:userss.name,
+          profile : userss.profile,
           name: name,
           latest: userss ? await fetchLatestMessage(userss._id._id) : null
         };
@@ -94,7 +95,7 @@ export const Messages = async (req, res) => {
         { reciverId: new mongoose.Types.ObjectId(repId), senderId: new mongoose.Types.ObjectId(senderId) },
         { reciverId: new mongoose.Types.ObjectId(senderId), senderId: new mongoose.Types.ObjectId(repId) }
       ]
-    });
+    }).select(['message','timeStamp']);
 
     if (response.length === 0) {
       return res.status(200).json([]);

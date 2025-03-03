@@ -20,9 +20,6 @@ const api = import.meta.env.VITE_API_HOST
 const [contactData,setContactData] = useState([])
 
 useEffect(()=>{
- localStorage.setItem('contactData',JSON.stringify(contactData))
-},[contactData])
-useEffect(()=>{
   const users = JSON.parse(localStorage.getItem('user')) || {};
   async function ContactFecth() {
     try{
@@ -42,8 +39,9 @@ useEffect(()=>{
 },[api,msg])
 
 function handelUserClick(el){
+  console.log(el)
   const {_id:id} = el._id 
-  mutate({senderId:user.id,repId:el._id._id})
+  mutate({senderId:user.id,repId:el._id})
   dispatch(userReuder(el))
   id ? setRecipitentId({repId:id}) : setRecipitentId({repId:el._id }) 
 }

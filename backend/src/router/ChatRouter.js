@@ -1,5 +1,8 @@
 import Message from '../model/MessaageModel.js'
 import User from '../model/userModel.js'
+import { decryptAesKey, decryptMessage } from '../utils/decryptionAesKey.js';
+import { decryptPrivateKey } from '../utils/KeyJeneration.js';
+import Redisclient from '../utils/redisClinet.js';
 
 function ChatRouter(io) {
     io.on('connection', async (socket) => {
@@ -19,18 +22,25 @@ function ChatRouter(io) {
         }
             try {
              
-                const newMsg = new Message({
-                    reciverId: msg.reciverID,
-                    senderId: msg.senderID,
-                    message: msg.message,
-                    iv:msg.iv,
-                    aesKey:msg.aesKey
-                });
-                await newMsg.save();
-                const reciverSocket = await User.findOne({ _id: msg.reciverID }).select(['socketid','privateKey']);
-                
+                // const newMsg = new Message({
+                //     reciverId: msg.reciverID,
+                //     senderId: msg.senderID,
+                //     message: msg.message,
+                //     iv:msg.iv,
+                //     aesKey:msg.aesKey
+                // });
+                // await newMsg.save();
+                const reciverSocket = await User.findOne({ _id: msg.reciverID }).select(['socketid','privateKey','salt','iv']);
+                const derivedKey = await Redisclient.get(`${msg.reciverID}`)
+                const parsedKey = JSON.parse(derivedKey)
+                let decryptedMessage;
+                if(derivedKey){
+                    const priavateKey =await decryptPrivateKey(reciverSocket.privateKey,parsedKey,reciverSocket.salt,reciverSocket.iv)
+                    const decryptionOfAes =await decryptAesKey(msg.aesKey,priavateKey)
+                    decryptedMessage = decryptMessage(msg.message, decryptionOfAes, msg.iv)
+                }
                 if (reciverSocket.socketid) {
-                    io.to(reciverSocket.socketid).emit("receiveMessage", {senderId:msg.senderID,reciverId:msg.reciverID,message:msg.message,timeStamp:Date.now()});
+                    io.to(reciverSocket.socketid).emit("receiveMessage", {senderId:msg.senderID,reciverId:msg.reciverID,message:decryptedMessage,timeStamp:Date.now()});
                 }
             } catch (er) {
                 console.log(er);

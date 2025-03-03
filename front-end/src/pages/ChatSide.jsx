@@ -48,11 +48,11 @@ useEffect(()=>{
     }
   };
 },[account?.id])
-
 async function handelMessage(){
-  const pubKey = user._id.publicKey
+  const pubKey =  user.publickey
+  console.log(pubKey)
   const encryptedMessage =await EncryptMessage(input,pubKey)
-  //  socket.current.emit("message",{message:input,reciverID:user._id,senderID:account.id,iv:encryptedMessage.iv,aesKey:encryptedMessage.encryptedAesKey}) 
+   socket.current.emit("message",{message:encryptedMessage.encryptedMessage,reciverID:user._id,senderID:account.id,iv:encryptedMessage.iv,aesKey:encryptedMessage.encryptedAesKey}) 
    setMessage(e=>[...e,{message:input,reciverId:user._id,senderId:account.id,timeStamp:Date.now()}])
    Inputmessage('')
 }
@@ -73,7 +73,7 @@ async function handelMessage(){
       }`}
     >
       <p className="whitespace-pre-wrap break-words">
-        {el.message}
+        {JSON.stringify(el.message)}
         <span className="text-[10px] text-slate-600">
           {DateTime(el.timeStamp)}
         </span>
